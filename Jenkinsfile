@@ -25,6 +25,23 @@ pipeline {
             }
         }
         
+        stage('Scan Image with Snyk') {
+            steps {
+                sh '''
+                    if ! command -v snyk &> /dev/null; then
+                        echo "Installing Snyk CLI..."
+                        npm install -g snyk
+                    fi
+
+                    echo "Authenticating Snyk.."
+                    snyk auth $SNYK_TOKEN
+
+                    echo "Scanning Docker image..."
+                    snyk container test $IMAGE_NAME:$IMAGE_TAG --severity-threshold=medium
+                '''
+            }
+        }
+
         stage('DockerHub Login') {
             steps {
                 withCredentials([usernamePassword(credentialsId: env.DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
