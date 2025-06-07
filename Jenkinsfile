@@ -5,7 +5,6 @@ pipeline {
         IMAGE_NAME = 'oluwaseun7/node-app'
         GIT_COMMIT = '' 
         BUILD_TIMESTAMP = '' 
-        SNYK_TOKEN = credentials('snyk-api-token')
     }
 
     stages {
@@ -26,23 +25,7 @@ pipeline {
                 sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
             }
         }
-        
-        stage('Scan Image with Snyk') {
-            steps {
-                sh '''
-                    if ! [ -x "./node_modules/.bin/snyk" ]; then
-                        echo "Installing Snyk CLI locally..."
-                        npm install snyk
-                    fi
 
-                    echo "Authenticating Snyk..."
-                    ./node_modules/.bin/snyk auth $SNYK_TOKEN
-
-                    echo "Scanning Docker image..."
-                    ./node_modules/.bin/snyk container test $IMAGE_NAME:$IMAGE_TAG --severity-threshold=medium
-                '''
-            }
-        }
 
         stage('Security Scan') {
             steps {
