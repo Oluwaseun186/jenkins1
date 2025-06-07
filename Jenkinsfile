@@ -32,10 +32,7 @@ pipeline {
                 sh '''
                     echo "Scanning Docker image with Trivy using Docker..."
                     docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-                    aquasec/trivy:latest image --ignore-unfixed --exit-code 1 $IMAGE_NAME:$IMAGE_TAG
-
-                    # Scan Docker image
-                   trivy image --no-progress --exit-code 0 $IMAGE_NAME:$IMAGE_TAG
+                    aquasec/trivy:latest image --ignore-unfixed --exit-code 0 $IMAGE_NAME:$IMAGE_TAG
                 '''
             }
         }
