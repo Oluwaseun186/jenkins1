@@ -3,8 +3,9 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'oluwaseun7/node-app'
+        GIT_COMMIT = '' 
+        BUILD_TIMESTAMP = '' 
         SNYK_TOKEN = credentials('snyk-api-token')
-        DOCKERHUB_CREDENTIALS = 'dockerhub'  
     }
 
     stages {
@@ -12,12 +13,13 @@ pipeline {
             steps {
                 checkout scm
                 script {
-                    env.GIT_COMMIT = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-                    env.BUILD_TIMESTAMP = sh(script: "date +%Y%m%d-%H%M%S", returnStdout: true).trim()
-                    env.IMAGE_TAG = "${env.GIT_COMMIT}-${env.BUILD_TIMESTAMP}"
+                    GIT_COMMIT = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    BUILD_TIMESTAMP = sh(script: "date +%Y%m%d-%H%M%S", returnStdout: true).trim()
+                    env.IMAGE_TAG = "${GIT_COMMIT}-${BUILD_TIMESTAMP}"
                 }
             }
         }
+        
 
         stage('Docker Image') {
             steps {
@@ -33,7 +35,7 @@ pipeline {
                         npm install -g snyk
                     fi
 
-                    echo "Authenticating Snyk.."
+                    echo "Authenticating Snyk..."
                     snyk auth $SNYK_TOKEN
 
                     echo "Scanning Docker image..."
@@ -42,9 +44,25 @@ pipeline {
             }
         }
 
+        stage('Security Scan') {
+            steps {
+                sh '''
+                    # Install Trivy (if not already available)
+                    if ! command -v trivy &> /dev/null; then
+                        echo "Installing Trivy..."
+                        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+                    fi
+
+                    # Scan Docker image
+                    trivy image --ignore-unfixed --exit-code 1 $IMAGE_NAME:$IMAGE_TAG
+                '''
+            }
+        }
+
+
         stage('DockerHub Login') {
             steps {
-                withCredentials([usernamePassword(credentialsId: env.DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                 }
             }
@@ -59,26 +77,27 @@ pipeline {
         stage('Run Container') {
             steps {
                 sh 'docker rm -f node-app || true'
-                sh 'sleep 5'
+                sh "sleep 5"
                 sh "docker run -d -p 3002:8000 --name node-app $IMAGE_NAME:$IMAGE_TAG"
-                sh 'sleep 5'
-                sh 'docker ps | grep node-app'
+                sh 'sleep 5' 
+                sh 'docker ps | grep node-app' 
             }
         }
 
         stage('Cleanup') {
             steps {
-                sh 'docker system prune -f'
+        sh 'docker system prune -f'
             }
         }
+
     }
 
     post {
         success {
-            echo "✅ Docker image built, pushed, and deployed with tag: ${env.IMAGE_TAG}"
+            echo '✅ Docker image built, pushed, and deployed with tag: ' + env.IMAGE_TAG
         }
         failure {
-            echo "❌ Build or deployment failed"
+            echo '❌ Build or deployment failed'
         }
     }
 }
