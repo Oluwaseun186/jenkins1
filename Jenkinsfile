@@ -29,7 +29,7 @@ pipeline {
         
         stage('Scan Image with Snyk') {
             steps {
-                    sh """
+                sh """
                     docker run --rm -e SNYK_TOKEN=$SNYK_TOKEN \
                         -v /var/run/docker.sock:/var/run/docker.sock \
                         snyk/snyk-cli:docker snyk container test $IMAGE_NAME:$IMAGE_TAG --severity-threshold=medium
