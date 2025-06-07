@@ -1,0 +1,18 @@
+<!-- views/home.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= companyName %> - Homepage</title>
+</head>
+<body>
+    <h1>Welcome to <%= companyName %>!</h1>
+    <p>This is our company homepage.</p>
+
+    <% if (session && session.user) { %>
+        <p>Hello, <%= session.user.username %>!</p>
+        <a href="/dashboard">Go to Dashboard</a>
+    <% } else { %>
+        <a href="/login">Login</a> | <a href="/signup">Sign Up</a>
+    <% } %>
+</body>
+</html>
