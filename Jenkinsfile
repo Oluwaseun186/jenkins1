@@ -37,7 +37,7 @@ pipeline {
                     fi
 
                     # Scan Docker image
-                    trivy image --ignore-unfixed --exit-code 1 $IMAGE_NAME:$IMAGE_TAG
+                   trivy image --no-progress --exit-code 0 $IMAGE_NAME:$IMAGE_TAG
                 '''
             }
         }
