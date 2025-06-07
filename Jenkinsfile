@@ -29,18 +29,11 @@ pipeline {
         
         stage('Scan Image with Snyk') {
             steps {
-                sh '''
-                    if ! command -v snyk &> /dev/null; then
-                        echo "Installing Snyk CLI..."
-                        npm install -g snyk
-                    fi
-
-                    echo "Authenticating Snyk..."
-                    snyk auth $SNYK_TOKEN
-
-                    echo "Scanning Docker image..."
-                    snyk container test $IMAGE_NAME:$IMAGE_TAG --severity-threshold=medium
-                '''
+                    sh """
+                    docker run --rm -e SNYK_TOKEN=$SNYK_TOKEN \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        snyk/snyk-cli:docker snyk container test $IMAGE_NAME:$IMAGE_TAG --severity-threshold=medium
+                    """
             }
         }
 
