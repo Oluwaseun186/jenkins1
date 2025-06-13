@@ -1,6 +1,6 @@
 pipeline {
 
-    agent {  label 'node1' }
+    agent none;
 
     environment {
         IMAGE_NAME = 'oluwaseun7/node-app'
@@ -10,6 +10,11 @@ pipeline {
 
     stages {
         stage('Checkout') {
+
+            agent {  
+                label 'node1' 
+            }
+
             steps {
                 checkout scm
                 script {
@@ -22,6 +27,9 @@ pipeline {
         
 
         stage('Docker Image') {
+            
+            agent any;
+
             steps {
                 sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
             }
