@@ -1,8 +1,7 @@
 pipeline {
-    
+
     agent { 
-        label 'latest-node' 
-        }
+        label 'latest-node'  }
 
     environment {
         IMAGE_NAME = 'oluwaseun7/node-app'
