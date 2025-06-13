@@ -1,0 +1,10 @@
+Jun 13, 2025 11:40:21 AM hudson.remoting.Launcher createEngine
+INFO: Setting up agent: node1
+Jun 13, 2025 11:40:21 AM hudson.remoting.Engine startEngine
+INFO: Using Remoting version: 3309.v27b_9314fd1a_4
+Jun 13, 2025 11:40:21 AM org.jenkinsci.remoting.engine.WorkDirManager initializeWorkDir
+INFO: Using /home/bimpe/INSTALLATION/jenkins/remoting as a remoting work directory
+Jun 13, 2025 11:40:22 AM hudson.remoting.Launcher$CuiListener status
+INFO: WebSocket connection open
+Jun 13, 2025 11:40:22 AM hudson.remoting.Launcher$CuiListener status
+INFO: Connected
