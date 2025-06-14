@@ -68,7 +68,6 @@ pipeline {
                 sh 'docker rm -f node-app || true'
                 sh "sleep 5"
                 sh "docker run -d -p 3002:8000 --name node-app $IMAGE_NAME:$IMAGE_TAG"
-                sh 'sleep 5' 
                 sh 'docker ps | grep node-app' 
             }
         }
