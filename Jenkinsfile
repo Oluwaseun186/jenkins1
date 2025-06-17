@@ -26,7 +26,7 @@ pipeline {
         }
         
 
-        stage('Docker Image') {
+        stage('Docker Image.') {
 
             agent {  
                 label 'node1' 
