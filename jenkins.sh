@@ -23,3 +23,50 @@ sudo systemctl enable jenkins
 sudo systemctl start jenkins
 
 sudo systemctl status jenkins
+
+#agent node
+
+
+curl -sO http://localhost:8080/jnlpJars/agent.jar;java -jar agent.jar -url http://localhost:8080/ -secret 3a32f8f0e8742e6782cdf7e817a918f64da1c5ee2507cd5c9a61151303844721 -name node1 -webSocket -workDir "/home/bimpe/INSTALLATION/jenkins"
+
+
+#set up grafana dashbard
+docker run -d \
+  -p 3000:3000 \
+  grafana/grafana
+
+  #set up prometheus dashboard
+  docker run -d \
+  -p 9090:9090 \
+  -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml \
+  prom/prometheus
+
+
+#install grafana  using SUDO
+sudo apt-get install -y apt-transport-https
+sudo apt-get install -y software-properties-common wget
+wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+sudo apt-get update
+sudo apt-get install grafana
+
+sudo systemctl daemon-reload
+sudo systemctl start grafana-server
+sudo systemctl enable grafana-server
+
+
+#install prometheus using SUDO
+# Extract and install with proper permissions
+sudo tar xvf prometheus-*.tar.gz
+sudo mv prometheus-*/prometheus /usr/local/bin/
+sudo mv prometheus-*/promtool /usr/local/bin/
+sudo mkdir -p /etc/prometheus
+sudo mv prometheus-*/consoles /etc/prometheus/
+sudo mv prometheus-*/console_libraries /etc/prometheus/
+
+# Install in your home directory instead
+mkdir -p ~/prometheus
+tar xvf prometheus-*.tar.gz -C ~/prometheus --strip-components=1
+echo 'export PATH=$PATH:~/prometheus' >> ~/.bashrc
+source ~/.bashrc
+prometheus --version
