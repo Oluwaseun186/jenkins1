@@ -24,7 +24,7 @@ sudo systemctl start jenkins
 
 sudo systemctl status jenkins
 
-#agent node
+#agent nodes
 
 
 curl -sO http://localhost:8080/jnlpJars/agent.jar;java -jar agent.jar -url http://localhost:8080/ -secret 3a32f8f0e8742e6782cdf7e817a918f64da1c5ee2507cd5c9a61151303844721 -name node1 -webSocket -workDir "/home/bimpe/INSTALLATION/jenkins"
